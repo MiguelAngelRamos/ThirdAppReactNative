@@ -68,11 +68,13 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
             onBlur={handleBlur('description')}
             value={values.description}
             error={touched.description}
+            style ={styles.inputSpacing}
           />
 
           <Button 
             mode="contained"
             onPress = {() => handleSubmit()}
+            style={styles.submitButton}
             >
             {item ? 'Actualizar': 'Agregar'}
           </Button>
@@ -87,6 +89,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16
+  },
+  inputSpacing: {
+    marginTop: 16,
+  },
+  submitButton: {
+    marginTop: 24
   }
 })
 
