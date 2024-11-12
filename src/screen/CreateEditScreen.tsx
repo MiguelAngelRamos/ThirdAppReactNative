@@ -1,5 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Button, Text, TextInput } from 'react-native-paper';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import { useItemContext } from '../hooks/useItemContext';
@@ -34,10 +35,59 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
         description: item ? item.description: '', // valor inicial del campo descripción
       }}
       validationSchema={validationSchema}
+      onSubmit={(values) => {
+        if(item) {
+          updateItem({...item, ...values})
+        } else {
+          addItem({
+            id: Math.random().toString(),
+            name: values.name,
+            description: values.description
+          });
+        }
+        navigation.goBack(); // Home
+      }}
+      validateOnBlur
+      validateOnChange
     >
+      {({ handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
+        <View style={styles.container}>
+          <TextInput 
+            label="Nombre"
+            mode="outlined"
+            onChangeText={handleChange('name')}
+            onBlur={handleBlur('name')}
+            value={values.name}
+            error={touched.name}
+          />
+
+          <TextInput 
+            label="Descripción"
+            mode='outlined'
+            onChangeText={handleChange('description')}
+            onBlur={handleBlur('description')}
+            value={values.description}
+            error={touched.description}
+          />
+
+          <Button 
+            mode="contained"
+            onPress = {() => handleSubmit()}
+            >
+            {item ? 'Actualizar': 'Agregar'}
+          </Button>
+        </View>
+      )}
   
     </Formik>
   )
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16
+  }
+})
 
 export default CreateEditScreen;
