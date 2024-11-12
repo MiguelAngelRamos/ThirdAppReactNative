@@ -58,8 +58,11 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
             onChangeText={handleChange('name')}
             onBlur={handleBlur('name')}
             value={values.name}
-            error={touched.name}
+            error={touched.name && !!errors.name}
           />
+          {touched.name && errors.name && (
+            <Text style={styles.errorText}>{errors.name}</Text>
+          )}
 
           <TextInput 
             label="Descripción"
@@ -67,9 +70,12 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
             onChangeText={handleChange('description')}
             onBlur={handleBlur('description')}
             value={values.description}
-            error={touched.description}
+            error={touched.description && !!errors.description}
             style ={styles.inputSpacing}
           />
+          {touched.description && errors.description && (
+            <Text style={styles.errorText}>{errors.description}</Text>
+          )}
 
           <Button 
             mode="contained"
@@ -93,9 +99,15 @@ const styles = StyleSheet.create({
   inputSpacing: {
     marginTop: 16,
   },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 4
+  },
   submitButton: {
     marginTop: 24
-  }
+  },
+
 })
 
 export default CreateEditScreen;
