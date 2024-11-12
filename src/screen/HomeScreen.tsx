@@ -11,7 +11,19 @@ interface HomeScreenProps {
 }
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const {items, deleteItem } = useItemContext();
-  return(
+
+  const handleDelete = (id: string ) => {
+    Alert.alert(
+      'Eliminar Elemento',
+      '¿Estás seguro que deseas eliminar este elemento?',
+      [
+        { text: 'Cancelar', style: 'cancel'},
+        { text: 'Eliminar', style: 'destructive', onPress: () => deleteItem(id)},
+      ]
+    );
+  };
+
+  return (
     <View style={styles.container}>
     <FlatList 
       data={items}
@@ -24,7 +36,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </Card.Content>
           <Card.Actions>
             <Button onPress={() => navigation.navigate('CreateEdit', {item})}>Editar</Button>
-            <Button>Eliminar</Button>
+            <Button onPress={() => handleDelete(item.id)}>Eliminar</Button>
           </Card.Actions>
         </Card>
       )}
