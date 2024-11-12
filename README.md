@@ -1,18 +1,5 @@
-## Instalaciones necesarias
-
-### Los estilos 
-```sh
-npm install react-native-paper 
-```
-
-### Formularios
-```sh
-npm install formik yup
-```
-
-### Para la navegación
+## Instalaciones para conectarmos a Firebase y Cloudinary
 
 ```sh
-npm install @react-navigation/native
-npm install @react-navigation/stack
+npm install firebase
 ```
