@@ -1,6 +1,6 @@
-import { createContext, ReactNode, useState } from "react";
-import { fireStore } from "../firebaseConfig";
-import { doc, collection, setDoc } from 'firebase/firestore';
+import { createContext, ReactNode, useState, useEffect } from "react";
+import { firestore } from "../firebaseConfig";
+import { doc, collection, setDoc, getDocs } from 'firebase/firestore';
 import { Alert } from "react-native";
 import { uploadImageCloudinary } from "../services/uploadImageCloudinary";
 
@@ -25,6 +25,23 @@ export const ItemProvider = ({ children } : { children: ReactNode}) => {
   // Estado de la lista de los items
   const [items, setItems] = useState<Item[]>([]);
   
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const query = await getDocs(collection(firestore,  'items'));
+        const itemList: Item[] = [];
+        query.forEach(doc => {
+          itemList.push({id: doc.id, ...doc.data()} as Item );
+        });
+        setItems(itemList);
+      } catch (error) {
+        Alert.alert("Error", "no se pudo obtener los items");
+      }
+    };
+
+    fetchItems();
+  },[]);
+
   // Función para crear
   const addItem = async (item: Omit<Item, 'id'>, image: string | null) => {
     try {
@@ -40,7 +57,7 @@ export const ItemProvider = ({ children } : { children: ReactNode}) => {
         }
       }
       // Generamos el documento que enviar a la base de datos
-      const newItemRef = doc(collection(fireStore, 'items'));
+      const newItemRef = doc(collection(firestore, 'items'));
       const newItem = {
         id: newItemRef.id,
         ...item,

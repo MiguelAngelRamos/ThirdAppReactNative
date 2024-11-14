@@ -1,4 +1,4 @@
-import { View, FlatList, Alert, StyleSheet } from 'react-native';
+import { View, FlatList, Alert, StyleSheet, Image } from 'react-native';
 import { Button, Card, Text, FAB } from 'react-native-paper';
 import { useItemContext } from '../hooks/useItemContext'; 
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -30,12 +30,20 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
         <Card style={styles.card}>
+          {item.imageUrl && (
+             <Image
+              source={{ uri: item.imageUrl }}
+              style={styles.image}
+              resizeMode='cover'
+            
+           />
+          )}
           <Card.Title title={item.name}></Card.Title>
           <Card.Content>
             <Text>{item.description}</Text>
           </Card.Content>
           <Card.Actions>
-            <Button onPress={() => navigation.navigate('CreateEdit', {item})}>Editar</Button>
+            <Button onPress={() => navigation.navigate('CreateEdit', { item: {...item, imageUrl: item.imageUrl ?? undefined}})}>Editar</Button>
             <Button onPress={() => handleDelete(item.id)}>Eliminar</Button>
           </Card.Actions>
         </Card>
@@ -58,6 +66,12 @@ const styles = StyleSheet.create({
  },
  card: {
   marginBottom: 16
+ },
+ image: {
+  width: '100%',
+  height: 150,
+  borderTopEndRadius: 4,
+  borderTopRightRadius: 4
  },
  fab: {
   position: 'absolute',
