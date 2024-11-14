@@ -77,6 +77,11 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
             <Text style={styles.errorText}>{errors.description}</Text>
           )}
 
+          <View style={styles.imageContainer}>
+            <Button>Seleccionar Imagen</Button>
+            <Button>Toma Foto</Button>
+          </View>
+
           <Button 
             mode="contained"
             onPress = {() => handleSubmit()}
@@ -107,6 +112,9 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: 24
   },
+  imageContainer: {
+    
+  }
 
 })
 

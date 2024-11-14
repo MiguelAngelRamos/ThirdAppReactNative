@@ -2,6 +2,7 @@ import { createContext, ReactNode, useState } from "react";
 import { fireStore } from "../firebaseConfig";
 import { doc, collection, setDoc } from 'firebase/firestore';
 import { Alert } from "react-native";
+import { uploadImageCloudinary } from "../services/uploadImageCloudinary";
 
 interface Item {
   id: string;
@@ -29,6 +30,15 @@ export const ItemProvider = ({ children } : { children: ReactNode}) => {
     try {
       let imageUrl = '';
 
+      if(image) {
+        const uploadedUrl = await uploadImageCloudinary(image);
+        if(uploadedUrl) {
+          imageUrl = uploadedUrl;
+        } else {
+          Alert.alert("Error", "no hay imagen");
+          return;
+        }
+      }
       // Generamos el documento que enviar a la base de datos
       const newItemRef = doc(collection(fireStore, 'items'));
       const newItem = {
