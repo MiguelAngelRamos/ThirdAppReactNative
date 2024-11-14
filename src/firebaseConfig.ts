@@ -7,7 +7,7 @@ const firebaseConfig = {
   projectId: "react-native-app-61912",
   storageBucket: "react-native-app-61912.firebasestorage.app",
   messagingSenderId: "783432306839",
-  appId: "1:783432306839:web:a219a8c9eb6d6faafe59d2"
+  appId: "1:783432306839:web:dd72ad2791e76bccfe59d2"
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig): getApp();
