@@ -6,6 +6,9 @@ import { RouteProp } from '@react-navigation/native';
 import { useItemContext } from '../hooks/useItemContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+
 
 
 // Tipo de navegacion
@@ -23,11 +26,26 @@ interface CreateEditScreenProps {
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('El nombre es requerido'),
   description: Yup.string().required('La descripción es requerida')
-})
+});
 
+
+ 
 const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) => {
   const { addItem, updateItem } = useItemContext(); // Obtiene las funciones del contexto
   const item = route.params?.item; // Obtiene el item de los parámetros de la ruta
+  const [image, setImage] = useState<string | null>(item?.imageUrl || null);
+  // Las funciones para fotos
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1
+    });
+    
+    if(!result.canceled && result.assets && result.assets.length > 0) {
+      setImage(result.assets[0].uri);
+    }
+  };
   return(
     <Formik
       initialValues={{
@@ -35,15 +53,14 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
         description: item ? item.description: '', // valor inicial del campo descripción
       }}
       validationSchema={validationSchema}
-      onSubmit={(values) => {
+      onSubmit={async (values) => {
         if(item) {
           updateItem({...item, ...values})
         } else {
-          addItem({
-            id: Math.random().toString(),
+          await addItem({
             name: values.name,
             description: values.description
-          });
+          }, image);
         }
         navigation.goBack(); // Home
       }}
@@ -78,7 +95,7 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
           )}
 
           <View style={styles.imageContainer}>
-            <Button>Seleccionar Imagen</Button>
+            <Button onPress={pickImage}>Seleccionar Imagen</Button>
             <Button>Toma Foto</Button>
           </View>
 

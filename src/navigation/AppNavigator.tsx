@@ -9,7 +9,7 @@ import CreateEditScreen from "../screen/CreateEditScreen";
 
 export type RootStackParamList = {
   Home: undefined;
-  CreateEdit: { item?: { id: string, name: string; description: string }} | undefined;
+  CreateEdit: { item?: { id: string, name: string; description: string, imageUrl?: string }} | undefined;
 }
 
 const Stack = createStackNavigator<RootStackParamList>();
