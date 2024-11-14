@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { StyleSheet, View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { Alert, StyleSheet, View } from 'react-native';
+import { Button, Text, TextInput, ActivityIndicator } from 'react-native-paper';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import { useItemContext } from '../hooks/useItemContext';
@@ -34,6 +34,7 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
   const { addItem, updateItem } = useItemContext(); // Obtiene las funciones del contexto
   const item = route.params?.item; // Obtiene el item de los parámetros de la ruta
   const [image, setImage] = useState<string | null>(item?.imageUrl || null);
+  const [isLoading, setIsLoading] = useState(false); // el estado de la carga
   // Las funciones para fotos
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -46,6 +47,18 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
       setImage(result.assets[0].uri);
     }
   };
+
+  const takePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1
+    });
+    
+    if(!result.canceled && result.assets && result.assets.length > 0) {
+      setImage(result.assets[0].uri);
+    }
+  }
   return(
     <Formik
       initialValues={{
@@ -54,15 +67,23 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
       }}
       validationSchema={validationSchema}
       onSubmit={async (values) => {
-        if(item) {
-          updateItem({...item, ...values})
-        } else {
-          await addItem({
-            name: values.name,
-            description: values.description
-          }, image);
+        setIsLoading(true);
+        try {
+          if(item) {
+            updateItem({...item, ...values})
+          } else {
+            await addItem({
+              name: values.name,
+              description: values.description
+            }, image);
+          }
+          navigation.goBack(); // Home
+        } catch (error) {
+          Alert.alert("Error", "No se puedo guardar en la base de datos");
+        } finally {
+          setIsLoading(false);
         }
-        navigation.goBack(); // Home
+ 
       }}
       validateOnBlur
       validateOnChange
@@ -96,16 +117,21 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
 
           <View style={styles.imageContainer}>
             <Button onPress={pickImage}>Seleccionar Imagen</Button>
-            <Button>Toma Foto</Button>
+            <Button onPress={takePhoto}>Toma Foto</Button>
           </View>
-
-          <Button 
-            mode="contained"
-            onPress = {() => handleSubmit()}
-            style={styles.submitButton}
-            >
-            {item ? 'Actualizar': 'Agregar'}
-          </Button>
+          {
+            isLoading ? (
+              <ActivityIndicator animating={true} size={"large"}/>):(
+              <Button 
+              mode="contained"
+              onPress = {() => handleSubmit()}
+              style={styles.submitButton}
+              >
+              {item ? 'Actualizar': 'Agregar'}
+            </Button>
+            )
+          }
+   
         </View>
       )}
   
