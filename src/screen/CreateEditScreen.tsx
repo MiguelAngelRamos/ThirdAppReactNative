@@ -1,5 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, Image, StyleSheet, View } from 'react-native';
 import { Button, Text, TextInput, ActivityIndicator } from 'react-native-paper';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
@@ -70,7 +70,7 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
         setIsLoading(true);
         try {
           if(item) {
-            updateItem({...item, ...values})
+            await updateItem({...item, ...values, imageUrl: image})
           } else {
             await addItem({
               name: values.name,
@@ -116,6 +116,7 @@ const CreateEditScreen: React.FC<CreateEditScreenProps> = ({navigation, route}) 
           )}
 
           <View style={styles.imageContainer}>
+            {image && <Image source={{ uri: image }} style={styles.image} resizeMode='contain'/>}
             <Button onPress={pickImage}>Seleccionar Imagen</Button>
             <Button onPress={takePhoto}>Toma Foto</Button>
           </View>
@@ -156,7 +157,13 @@ const styles = StyleSheet.create({
     marginTop: 24
   },
   imageContainer: {
-    
+    marginTop: 16,
+    alignItems: 'center'
+  },
+  image: {
+    width: 300,
+    height: 300,
+    marginBottom: 16
   }
 
 })

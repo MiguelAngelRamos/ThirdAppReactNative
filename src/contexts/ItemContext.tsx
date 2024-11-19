@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useState, useEffect } from "react";
 import { firestore } from "../firebaseConfig";
-import { doc, collection, setDoc, getDocs } from 'firebase/firestore';
+import { doc, collection, setDoc, getDocs, deleteDoc, updateDoc } from 'firebase/firestore';
 import { Alert } from "react-native";
 import { uploadImageCloudinary } from "../services/uploadImageCloudinary";
 
@@ -70,15 +70,35 @@ export const ItemProvider = ({ children } : { children: ReactNode}) => {
       Alert.alert("Error", "No se puedo crear el item"); 
     }
   };
-
-
   // Funcion para actualizar los items de la lista
-  const updateItem = (updatedItem: Item) =>
-    setItems((prevItems) => 
-      prevItems.map((item) =>( item.id === updatedItem.id ? updatedItem: item))
-    );
+  const updateItem = async (updatedItem: Item) => {
+    try {
+      const itemRef = doc(firestore, 'items', updatedItem.id);
+      // Comienzo a crear el item actualizado que quiero persistir en firebase
+      const updatedItemData = {
+        name: updatedItem.name,
+        description: updatedItem.description,
+        imageUrl: updatedItem.imageUrl,
+      };
+      await updateDoc(itemRef, updatedItemData);
+      setItems((prevItems) =>
+        prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+      );
+    } catch (error) {
+      Alert.alert(`Error, No se pudo actualizar: ${error}`);
+    }
+  }
+
   // Función para eliminar un item de la lista
-  const deleteItem = (id: string) => setItems((prevItems) => prevItems.filter((item) => item.id !== id)); 
+  const deleteItem = async (id: string) => {
+    try {
+      const itemRef = doc(firestore, 'items', id);
+      await deleteDoc(itemRef);
+      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    } catch (error) {
+      Alert.alert("Error", "No se pudo eliminar el item.");
+    }
+  }; 
 
   return (
     <ItemContext.Provider value={{ items, addItem, updateItem, deleteItem}}>
